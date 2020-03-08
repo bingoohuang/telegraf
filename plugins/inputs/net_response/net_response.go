@@ -29,6 +29,7 @@ type NetResponse struct {
 	Timeout     internal.Duration
 	ReadTimeout internal.Duration
 	Send        string
+	CustomTags  map[string]string
 	Expect      string
 	Protocol    string
 }
@@ -53,6 +54,12 @@ var sampleConfig = `
 
   ## Set read timeout (only used if expecting a response)
   # read_timeout = "1s"
+
+  ## Set custom tags 
+  # [inputs.http_response.custom_tags]
+  #   appName = "rig-runner"
+  #   createdBy = "bingoohuang"
+
 
   ## The following options are required for UDP checks. For TCP, they are
   ## optional. The plugin will send the given string to the server and then
@@ -211,6 +218,11 @@ func (n *NetResponse) Gather(acc telegraf.Accumulator) error {
 	}
 	// Prepare data
 	tags := map[string]string{"server": host, "port": port}
+
+	for key, val := range n.CustomTags {
+		tags[key] = val
+	}
+
 	var fields map[string]interface{}
 	var returnTags map[string]string
 	// Gather data

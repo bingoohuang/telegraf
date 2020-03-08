@@ -28,6 +28,7 @@ type HTTPResponse struct {
 	Method              string
 	ResponseTimeout     internal.Duration
 	Headers             map[string]string
+	CustomTags          map[string]string
 	FollowRedirects     bool
 	ResponseStringMatch string
 	Interface           string
@@ -57,6 +58,11 @@ var sampleConfig = `
 
   ## Set response_timeout (default 5 seconds)
   # response_timeout = "5s"
+
+  ## Set custom tags 
+  # [inputs.http_response.custom_tags]
+  #   appName = "rig-runner"
+  #   createdBy = "bingoohuang"
 
   ## HTTP Request Method
   # method = "GET"
@@ -217,6 +223,10 @@ func (h *HTTPResponse) httpGather(u string) (map[string]interface{}, map[string]
 	// Prepare fields and tags
 	fields := make(map[string]interface{})
 	tags := map[string]string{"server": u, "method": h.Method}
+
+	for key, val := range h.CustomTags {
+		tags[key] = val
+	}
 
 	var body io.Reader
 	if h.Body != "" {
