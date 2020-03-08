@@ -29,7 +29,6 @@ type NetResponse struct {
 	Timeout     internal.Duration
 	ReadTimeout internal.Duration
 	Send        string
-	CustomTags  map[string]string
 	Expect      string
 	Protocol    string
 }
@@ -218,10 +217,6 @@ func (n *NetResponse) Gather(acc telegraf.Accumulator) error {
 	}
 	// Prepare data
 	tags := map[string]string{"server": host, "port": port}
-
-	for key, val := range n.CustomTags {
-		tags[key] = val
-	}
 
 	var fields map[string]interface{}
 	var returnTags map[string]string
